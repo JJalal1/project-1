@@ -46,6 +46,17 @@ jobs:
         working-directory: buildapp
         run: flutter pub get
 
+      - name: Analyze report
+        working-directory: buildapp
+        run: flutter analyze --no-fatal-infos > ../ANALYZE.txt 2>&1 || true
+
+      - name: Upload analyze report
+        uses: actions/upload-artifact@v4
+        with:
+          name: v7-analyze-report
+          path: ANALYZE.txt
+          retention-days: 1
+
       - name: Analyze
         working-directory: buildapp
         run: flutter analyze --no-fatal-infos
