@@ -32,17 +32,6 @@ jobs:
           rm -rf buildapp/test
           python3 - <<'PY'
           from pathlib import Path
-
-          main = Path('buildapp/lib/main.dart')
-          s = main.read_text()
-          bad = "Row(children: ['الأحد 13', 'الاثنين 14', 'الثلاثاء 15'].map((e) => Expanded(child: Padding(padding: const EdgeInsetsDirectional.only(end: 8), child: ChoiceChip(selected: e.startsWith('الاثنين'), label: SizedBox(width: double.infinity, child: Text(e, textAlign: TextAlign.center))))).toList()),"
-          good = "Row(children: ['الأحد 13', 'الاثنين 14', 'الثلاثاء 15'].map((e) => Expanded(child: Padding(padding: const EdgeInsetsDirectional.only(end: 8), child: ChoiceChip(selected: e.startsWith('الاثنين'), label: SizedBox(width: double.infinity, child: Text(e, textAlign: TextAlign.center)))))).toList()),"
-          if bad not in s:
-              raise SystemExit('Expected booking row source was not found')
-          s = s.replace(bad, good)
-          s = s.replace('Colors.white.withOpacity(.92)', 'Colors.white.withValues(alpha: .92)')
-          main.write_text(s)
-
           manifest = Path('buildapp/android/app/src/main/AndroidManifest.xml')
           m = manifest.read_text()
           if 'android.permission.INTERNET' not in m:
@@ -64,16 +53,16 @@ jobs:
 
       - name: Prepare artifact
         run: |
-          cp buildapp/build/app/outputs/flutter-apk/app-release.apk real-estate-regular-user-preview.apk
-          sha256sum real-estate-regular-user-preview.apk > SHA256.txt
-          printf 'Standalone UI prototype only.\nSource product repository was read-only and not modified.\n' > BUILD_INFO.txt
+          cp buildapp/build/app/outputs/flutter-apk/app-release.apk real-estate-regular-user-preview-v2.apk
+          sha256sum real-estate-regular-user-preview-v2.apk > SHA256.txt
+          printf 'Standalone UI prototype v2 only.\nSource product repository was read-only and not modified.\n' > BUILD_INFO.txt
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: regular-user-preview-apk
+          name: regular-user-preview-v2-apk
           path: |
-            real-estate-regular-user-preview.apk
+            real-estate-regular-user-preview-v2.apk
             SHA256.txt
             BUILD_INFO.txt
           retention-days: 7
