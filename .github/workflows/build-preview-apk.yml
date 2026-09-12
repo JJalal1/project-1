@@ -28,7 +28,7 @@ jobs:
         run: |
           flutter create --platforms=android --project-name real_estate_ui_preview --org com.preview buildapp
           cp pubspec.yaml buildapp/pubspec.yaml
-          cp lib/main.dart buildapp/lib/main.dart
+          cp lib/main_v4.dart buildapp/lib/main.dart
           rm -rf buildapp/test
           python3 - <<'PY'
           from pathlib import Path
@@ -53,16 +53,16 @@ jobs:
 
       - name: Prepare artifact
         run: |
-          cp buildapp/build/app/outputs/flutter-apk/app-release.apk real-estate-regular-user-preview-v3.apk
-          sha256sum real-estate-regular-user-preview-v3.apk > SHA256.txt
-          printf 'Standalone UI prototype v3 only.\nCompletely redesigned visual identity.\nSource product repository was read-only and not modified.\n' > BUILD_INFO.txt
+          cp buildapp/build/app/outputs/flutter-apk/app-release.apk real-estate-regular-user-preview-v4.apk
+          sha256sum real-estate-regular-user-preview-v4.apk > SHA256.txt
+          printf 'Standalone UI prototype v4 only.\nMap-first fused visual direction based on the shared reference image, while preserving the product content model.\nSource product repository was read-only and not modified.\n' > BUILD_INFO.txt
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: regular-user-preview-v3-apk
+          name: regular-user-preview-v4-apk
           path: |
-            real-estate-regular-user-preview-v3.apk
+            real-estate-regular-user-preview-v4.apk
             SHA256.txt
             BUILD_INFO.txt
           retention-days: 7
