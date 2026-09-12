@@ -32,6 +32,12 @@ jobs:
           rm -rf buildapp/test
           python3 - <<'PY'
           from pathlib import Path
+          main = Path('buildapp/lib/main.dart')
+          s = main.read_text()
+          s = s.replace('const RangeSlider(values:RangeValues(25,90)', 'RangeSlider(values:const RangeValues(25,90)')
+          s = s.replace(']) )]));}', ']) ))]));}')
+          main.write_text(s)
+
           manifest = Path('buildapp/android/app/src/main/AndroidManifest.xml')
           m = manifest.read_text()
           if 'android.permission.INTERNET' not in m:
