@@ -1,0 +1,67 @@
+name: Build Preview APK
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Create isolated Android shell
+        run: |
+          flutter create --platforms=android --project-name real_estate_ui_preview --org com.preview buildapp
+          cp pubspec.yaml buildapp/pubspec.yaml
+          cp lib/main.dart buildapp/lib/main.dart
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('buildapp/android/app/src/main/AndroidManifest.xml')
+          s = p.read_text()
+          if 'android.permission.INTERNET' not in s:
+              s = s.replace('<manifest xmlns:android="http://schemas.android.com/apk/res/android">', '<manifest xmlns:android="http://schemas.android.com/apk/res/android">\n    <uses-permission android:name="android.permission.INTERNET"/>')
+          p.write_text(s)
+          PY
+
+      - name: Dependencies
+        working-directory: buildapp
+        run: flutter pub get
+
+      - name: Analyze
+        working-directory: buildapp
+        run: flutter analyze
+
+      - name: Build release APK
+        working-directory: buildapp
+        run: flutter build apk --release
+
+      - name: Prepare artifact
+        run: |
+          cp buildapp/build/app/outputs/flutter-apk/app-release.apk real-estate-regular-user-preview.apk
+          sha256sum real-estate-regular-user-preview.apk > SHA256.txt
+          printf 'Standalone UI prototype only.\nSource product repository was read-only and not modified.\n' > BUILD_INFO.txt
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: regular-user-preview-apk
+          path: |
+            real-estate-regular-user-preview.apk
+            SHA256.txt
+            BUILD_INFO.txt
+          retention-days: 7
