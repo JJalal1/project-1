@@ -29,13 +29,25 @@ jobs:
           flutter create --platforms=android --project-name real_estate_ui_preview --org com.preview buildapp
           cp pubspec.yaml buildapp/pubspec.yaml
           cp lib/main.dart buildapp/lib/main.dart
+          rm -rf buildapp/test
           python3 - <<'PY'
           from pathlib import Path
-          p = Path('buildapp/android/app/src/main/AndroidManifest.xml')
-          s = p.read_text()
-          if 'android.permission.INTERNET' not in s:
-              s = s.replace('<manifest xmlns:android="http://schemas.android.com/apk/res/android">', '<manifest xmlns:android="http://schemas.android.com/apk/res/android">\n    <uses-permission android:name="android.permission.INTERNET"/>')
-          p.write_text(s)
+
+          main = Path('buildapp/lib/main.dart')
+          s = main.read_text()
+          bad = "Row(children: ['الأحد 13', 'الاثنين 14', 'الثلاثاء 15'].map((e) => Expanded(child: Padding(padding: const EdgeInsetsDirectional.only(end: 8), child: ChoiceChip(selected: e.startsWith('الاثنين'), label: SizedBox(width: double.infinity, child: Text(e, textAlign: TextAlign.center))))).toList()),"
+          good = "Row(children: ['الأحد 13', 'الاثنين 14', 'الثلاثاء 15'].map((e) => Expanded(child: Padding(padding: const EdgeInsetsDirectional.only(end: 8), child: ChoiceChip(selected: e.startsWith('الاثنين'), label: SizedBox(width: double.infinity, child: Text(e, textAlign: TextAlign.center)))))).toList()),"
+          if bad not in s:
+              raise SystemExit('Expected booking row source was not found')
+          s = s.replace(bad, good)
+          s = s.replace('Colors.white.withOpacity(.92)', 'Colors.white.withValues(alpha: .92)')
+          main.write_text(s)
+
+          manifest = Path('buildapp/android/app/src/main/AndroidManifest.xml')
+          m = manifest.read_text()
+          if 'android.permission.INTERNET' not in m:
+              m = m.replace('<manifest xmlns:android="http://schemas.android.com/apk/res/android">', '<manifest xmlns:android="http://schemas.android.com/apk/res/android">\n    <uses-permission android:name="android.permission.INTERNET"/>')
+          manifest.write_text(m)
           PY
 
       - name: Dependencies
