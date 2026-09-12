@@ -32,6 +32,198 @@ jobs:
           rm -rf buildapp/test
           python3 - <<'PY'
           from pathlib import Path
+          main = Path('buildapp/lib/main.dart')
+          lines = main.read_text().splitlines()
+          fixes = {
+            86: r'''class _SwitchBar extends StatelessWidget {
+  final String count; final bool map; final VoidCallback onSwitch,onAdd;
+  const _SwitchBar({required this.count,required this.map,required this.onSwitch,required this.onAdd});
+  @override Widget build(BuildContext c) {
+    return Material(
+      elevation:7,color:Colors.white,borderRadius:BorderRadius.circular(18),clipBehavior:Clip.antiAlias,
+      child:SizedBox(height:58,child:Row(children:[
+        Expanded(child:InkWell(onTap:onSwitch,child:Row(mainAxisAlignment:MainAxisAlignment.center,children:[Icon(map?Icons.view_list_outlined:Icons.map_outlined),const SizedBox(width:7),Text(map?'قائمة':'خريطة',style:const TextStyle(fontWeight:FontWeight.w900))]))),
+        const VerticalDivider(),
+        Expanded(child:Center(child:Text(count,style:const TextStyle(fontWeight:FontWeight.w900)))),
+        const VerticalDivider(),
+        Expanded(child:InkWell(onTap:onAdd,child:const Row(mainAxisAlignment:MainAxisAlignment.center,children:[Icon(Icons.add_circle,color:teal),SizedBox(width:7),Text('إضافة',style:TextStyle(color:teal,fontWeight:FontWeight.w900))])))
+      ]))
+    );
+  }
+}''',
+            93: r'''class PropertyResult extends StatelessWidget {
+  final P p; final VoidCallback onDetails,onMap;
+  const PropertyResult({super.key,required this.p,required this.onDetails,required this.onMap});
+  @override Widget build(BuildContext c) {
+    return SizedBox(
+      height:164,
+      child:Material(
+        color:Colors.white,borderRadius:BorderRadius.circular(20),clipBehavior:Clip.antiAlias,
+        child:InkWell(
+          onTap:onDetails,
+          child:Container(
+            decoration:BoxDecoration(borderRadius:BorderRadius.circular(20),border:Border.all(color:line)),
+            child:Row(crossAxisAlignment:CrossAxisAlignment.stretch,children:[
+              SizedBox(width:132,child:Stack(fit:StackFit.expand,children:[
+                Img(p.img),
+                PositionedDirectional(top:8,start:8,child:Material(color:Colors.white.withValues(alpha:.94),shape:const CircleBorder(),child:IconButton(onPressed:(){},icon:const Icon(Icons.favorite_border_rounded))))
+              ])),
+              Expanded(child:Padding(
+                padding:const EdgeInsets.fromLTRB(12,11,12,10),
+                child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
+                  Row(children:[_Badge(p.purpose),const SizedBox(width:6),_Badge(p.type),const Spacer(),IconButton(onPressed:onMap,icon:const Icon(Icons.location_on_outlined,size:19))]),
+                  Text(p.t,maxLines:1,overflow:TextOverflow.ellipsis,style:const TextStyle(fontWeight:FontWeight.w900)),
+                  const SizedBox(height:4),
+                  Text(p.p,style:const TextStyle(color:teal,fontWeight:FontWeight.w900)),
+                  const Spacer(),
+                  Row(children:[const Icon(Icons.square_foot,size:15,color:muted),Text('${p.area.toInt()} م²',style:const TextStyle(fontSize:10,color:muted)),const SizedBox(width:8),const Icon(Icons.bed_outlined,size:15,color:muted),Text('${p.beds}',style:const TextStyle(fontSize:10,color:muted)),const SizedBox(width:8),const Icon(Icons.bathtub_outlined,size:15,color:muted),Text('${p.baths}',style:const TextStyle(fontSize:10,color:muted))]),
+                  const SizedBox(height:5),Text(p.loc,style:const TextStyle(color:muted,fontSize:10))
+                ])
+              ))
+            ])
+          )
+        )
+      )
+    );
+  }
+}''',
+            110: r'''class _MessagesState extends State<Messages> {
+  bool unread=false;
+  final names=['مكتب النخبة العقاري','أحمد عبدالله','مؤسسة الأمانة'];
+  @override Widget build(BuildContext c) {
+    final visible=unread?[0]:[0,1,2];
+    return SafeArea(child:Padding(
+      padding:const EdgeInsets.fromLTRB(16,18,16,100),
+      child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
+        const Text('الرسائل',style:TextStyle(fontSize:28,fontWeight:FontWeight.w900)),
+        const SizedBox(height:12),
+        _Card(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
+          const Text('عندك 2 رسالة غير مقروءة',style:TextStyle(fontWeight:FontWeight.w900,fontSize:18)),
+          const SizedBox(height:4),
+          const Text('3 محادثات مرتبطة برحلات عقارية داخل التطبيق.',style:TextStyle(color:muted)),
+          const SizedBox(height:10),
+          FilterChip(selected:unread,avatar:const Icon(Icons.mark_email_unread_outlined,size:18),label:const Text('غير المقروء فقط (2)'),onSelected:(v)=>setState(()=>unread=v))
+        ])),
+        const SizedBox(height:12),
+        Expanded(child:ListView.separated(
+          itemCount:visible.length,
+          separatorBuilder:(_,__)=>const SizedBox(height:10),
+          itemBuilder:(context,j){
+            final idx=visible[j];
+            return InkWell(
+              onTap:()=>go(context,Chat(ps[idx])),borderRadius:BorderRadius.circular(20),
+              child:Container(
+                padding:const EdgeInsets.all(13),
+                decoration:BoxDecoration(color:idx==0?sky:Colors.white,borderRadius:BorderRadius.circular(20),border:Border.all(color:line)),
+                child:Row(crossAxisAlignment:CrossAxisAlignment.start,children:[
+                  CircleAvatar(radius:24,backgroundColor:idx==0?const Color(0xFFD5EAF1):sand,child:Text(names[idx][0],style:const TextStyle(color:navy,fontWeight:FontWeight.w900))),
+                  const SizedBox(width:11),
+                  Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
+                    Row(children:[Expanded(child:Text(names[idx],style:const TextStyle(fontWeight:FontWeight.w900))),Text(idx==0?'منذ 5 د':'أمس',style:const TextStyle(fontSize:9,color:muted))]),
+                    const SizedBox(height:4),
+                    Row(children:[const Icon(Icons.home_work_outlined,size:15,color:teal),const SizedBox(width:4),Expanded(child:Text(ps[idx].t,style:const TextStyle(fontSize:10,color:teal,fontWeight:FontWeight.w700)))]),
+                    const SizedBox(height:5),
+                    Text(idx==0?'تم تأكيد معاينتك غدًا الساعة 4:30 م':'هل يناسبك الموعد يوم الثلاثاء؟',maxLines:2,overflow:TextOverflow.ellipsis,style:const TextStyle(color:muted,fontSize:11))
+                  ])),
+                  if(idx==0) const CircleAvatar(radius:12,backgroundColor:navy,child:Text('2',style:TextStyle(color:Colors.white,fontSize:9)))
+                ])
+              )
+            );
+          }
+        ))
+      ])
+    ));
+  }
+}''',
+            133: r'''class Compare extends StatelessWidget {
+  final List<int> ids;
+  const Compare({super.key,required this.ids});
+  @override Widget build(BuildContext c) {
+    final items=ps.where((p)=>ids.contains(p.id)).toList();
+    return Scaffold(
+      appBar:AppBar(title:const Text('مقارنة العقارات')),
+      body:SingleChildScrollView(
+        scrollDirection:Axis.horizontal,padding:const EdgeInsets.all(16),
+        child:Row(crossAxisAlignment:CrossAxisAlignment.start,children:items.map((p)=>Padding(
+          padding:const EdgeInsetsDirectional.only(end:12),
+          child:SizedBox(width:230,child:_Card(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
+            Img(p.img,h:150,w:double.infinity,r:BorderRadius.circular(14)),
+            const SizedBox(height:10),Text(p.t,style:const TextStyle(fontWeight:FontWeight.w900)),
+            const SizedBox(height:5),Text(p.p,style:const TextStyle(color:teal,fontWeight:FontWeight.w900)),
+            const Divider(),
+            valueRow('السعي',p.sai),
+            valueRow('مؤشر السوق','ضمن النطاق المعتاد\n8 عقارات مقارنة'),
+            valueRow('المساحة','${p.area.toInt()} م²'),
+            valueRow('الغرف','${p.beds}'),valueRow('الحمامات','${p.baths}'),
+            valueRow('الموقع',p.loc),valueRow('المعلن','مكتب موثق'),valueRow('التقييم','4.7 (18)'),
+            const SizedBox(height:8),FilledButton.tonal(onPressed:()=>go(c,Details(p)),child:const Text('فتح العقار'))
+          ])))
+        )).toList())
+      )
+    );
+  }
+  Widget valueRow(String a,String b)=>Padding(
+    padding:const EdgeInsets.symmetric(vertical:6),
+    child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(a,style:const TextStyle(fontSize:10,color:muted)),const SizedBox(height:2),Text(b),const Divider()])
+  );
+}''',
+            153: r'''class _LocationPickerState extends State<LocationPicker> {
+  Offset pin=const Offset(190,360);
+  String msg='اسحب الدبوس إلى العقار، أو حرّك الخريطة ليعود الدبوس إلى المنتصف.';
+  bool resolving=false;
+  @override Widget build(BuildContext c) {
+    return Scaffold(
+      appBar:AppBar(title:const Text('تحديد موقع العقار'),centerTitle:true),
+      body:LayoutBuilder(builder:(context,k){
+        return Stack(children:[
+          const Positioned.fill(child:MapArt()),
+          PositionedDirectional(start:14,end:14,top:14,child:IgnorePointer(child:_Card(child:Row(children:[const Icon(Icons.location_on_rounded,color:teal),const SizedBox(width:8),Expanded(child:Text(msg,style:const TextStyle(fontWeight:FontWeight.w800)))])))),
+          Positioned(left:pin.dx-24,top:pin.dy-24,child:IgnorePointer(child:Icon(Icons.center_focus_strong,size:48,color:teal.withValues(alpha:.35)))),
+          Positioned(
+            left:pin.dx-31,top:pin.dy-62,
+            child:GestureDetector(
+              onPanUpdate:(d)=>setState(()=>pin=Offset((pin.dx+d.delta.dx).clamp(30.0,k.maxWidth-30),(pin.dy+d.delta.dy).clamp(64.0,k.maxHeight-132))),
+              onPanEnd:(_)=>setState(()=>msg='تم نقل الدبوس. يمكنك سحبه مرة أخرى أو تحريك الخريطة.'),
+              child:Container(width:62,height:68,alignment:Alignment.topCenter,decoration:BoxDecoration(color:Colors.white.withValues(alpha:.97),shape:BoxShape.circle,boxShadow:const [BoxShadow(color:Color(0x33000000),blurRadius:10,offset:Offset(0,4))]),child:const Padding(padding:EdgeInsets.only(top:5),child:Icon(Icons.location_on_rounded,size:52,color:coral)))
+            )
+          ),
+          PositionedDirectional(
+            end:14,bottom:150,
+            child:FloatingActionButton.small(heroTag:'pick-location',onPressed:()=>setState((){pin=Offset(k.maxWidth/2,k.maxHeight/2);msg='تم الانتقال إلى موقعك الحالي.';}),child:const Icon(Icons.my_location_rounded))
+          ),
+          PositionedDirectional(
+            start:14,end:14,bottom:18,
+            child:SafeArea(top:false,child:Card(elevation:5,margin:EdgeInsets.zero,child:Padding(
+              padding:const EdgeInsets.all(12),
+              child:Column(mainAxisSize:MainAxisSize.min,crossAxisAlignment:CrossAxisAlignment.stretch,children:[
+                Text(resolving?'جارٍ قراءة المحافظة والحي والشارع…':'بعد التأكيد سنحاول تعبئة المحافظة والحي والشارع تلقائياً، ويمكنك تعديلها.',textAlign:TextAlign.center,style:const TextStyle(fontSize:11)),
+                const SizedBox(height:8),
+                FilledButton.icon(
+                  onPressed:resolving?null:(){
+                    setState(()=>resolving=true);
+                    Future.delayed(const Duration(milliseconds:700),(){
+                      if(!mounted)return;
+                      setState(()=>resolving=false);
+                      Navigator.pop(context);
+                    });
+                  },
+                  icon:resolving?const SizedBox.square(dimension:18,child:CircularProgressIndicator(strokeWidth:2)):const Icon(Icons.check_circle_outline),
+                  label:Text(resolving?'جارٍ قراءة العنوان…':'تأكيد هذا الموقع')
+                )
+              ])
+            )))
+          )
+        ]);
+      })
+    );
+  }
+}'''
+          }
+          out=[]
+          for num,line in enumerate(lines,1):
+              out.append(fixes.get(num,line))
+          main.write_text('\n'.join(out)+'\n')
+
           manifest = Path('buildapp/android/app/src/main/AndroidManifest.xml')
           m = manifest.read_text()
           if 'android.permission.INTERNET' not in m:
