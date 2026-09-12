@@ -33,6 +33,7 @@ jobs:
           python3 tools/patch_v5.py buildapp/lib/main.dart
           python3 tools/patch_v6.py buildapp/lib/main.dart
           python3 tools/patch_v7.py buildapp/lib/main.dart
+          python3 tools/cleanup_v7.py buildapp/lib/main.dart
           python3 - <<'PY'
           from pathlib import Path
           manifest = Path('buildapp/android/app/src/main/AndroidManifest.xml')
@@ -45,17 +46,6 @@ jobs:
       - name: Dependencies
         working-directory: buildapp
         run: flutter pub get
-
-      - name: Analyze report
-        working-directory: buildapp
-        run: flutter analyze --no-fatal-infos > ../ANALYZE.txt 2>&1 || true
-
-      - name: Upload analyze report
-        uses: actions/upload-artifact@v4
-        with:
-          name: v7-analyze-report
-          path: ANALYZE.txt
-          retention-days: 1
 
       - name: Analyze
         working-directory: buildapp
