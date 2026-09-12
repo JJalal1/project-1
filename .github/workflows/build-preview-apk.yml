@@ -11,19 +11,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
-
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: stable
           cache: true
-
       - name: Create isolated Android shell
         run: |
           flutter create --platforms=android --project-name real_estate_ui_preview --org com.preview buildapp
@@ -40,25 +37,29 @@ jobs:
               m = m.replace('<manifest xmlns:android="http://schemas.android.com/apk/res/android">', '<manifest xmlns:android="http://schemas.android.com/apk/res/android">\n    <uses-permission android:name="android.permission.INTERNET"/>')
           manifest.write_text(m)
           PY
-
       - name: Dependencies
         working-directory: buildapp
         run: flutter pub get
-
+      - name: Analyze report
+        working-directory: buildapp
+        run: flutter analyze --no-fatal-infos > ../ANALYZE_V8.txt 2>&1 || true
+      - name: Upload analyze report
+        uses: actions/upload-artifact@v4
+        with:
+          name: v8-analyze-report-final
+          path: ANALYZE_V8.txt
+          retention-days: 1
       - name: Analyze
         working-directory: buildapp
         run: flutter analyze --no-fatal-infos
-
       - name: Build release APK
         working-directory: buildapp
         run: flutter build apk --release
-
       - name: Prepare artifact
         run: |
           cp buildapp/build/app/outputs/flutter-apk/app-release.apk real-estate-regular-user-preview-v8.apk
           sha256sum real-estate-regular-user-preview-v8.apk > SHA256.txt
           printf 'Standalone regular-user UI prototype v8.\nRefined from the V3 visual direction the user preferred, with fuller project-faithful search, filter, map, location and area-drawing flows.\nSource product repository was not modified.\n' > BUILD_INFO.txt
-
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
