@@ -2,7 +2,7 @@ name: Build Preview APK
 
 on:
   push:
-    branches: [ v6-professional-ui ]
+    branches: [ v7-template-inspired-ui ]
   workflow_dispatch:
 
 jobs:
@@ -32,6 +32,7 @@ jobs:
           rm -rf buildapp/test
           python3 tools/patch_v5.py buildapp/lib/main.dart
           python3 tools/patch_v6.py buildapp/lib/main.dart
+          python3 tools/patch_v7.py buildapp/lib/main.dart
           python3 - <<'PY'
           from pathlib import Path
           manifest = Path('buildapp/android/app/src/main/AndroidManifest.xml')
@@ -55,16 +56,16 @@ jobs:
 
       - name: Prepare artifact
         run: |
-          cp buildapp/build/app/outputs/flutter-apk/app-release.apk real-estate-regular-user-preview-v6.apk
-          sha256sum real-estate-regular-user-preview-v6.apk > SHA256.txt
-          printf 'Standalone regular-user UI prototype v6.\nProfessional visual redesign based on the product flows and user feedback.\nSource product repository was not modified.\n' > BUILD_INFO.txt
+          cp buildapp/build/app/outputs/flutter-apk/app-release.apk real-estate-regular-user-preview-v7.apk
+          sha256sum real-estate-regular-user-preview-v7.apk > SHA256.txt
+          printf 'Standalone regular-user UI prototype v7.\nTemplate-inspired visual redesign using project-faithful content and flows.\nSource product repository was not modified.\n' > BUILD_INFO.txt
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: regular-user-preview-v6-apk
+          name: regular-user-preview-v7-apk
           path: |
-            real-estate-regular-user-preview-v6.apk
+            real-estate-regular-user-preview-v7.apk
             SHA256.txt
             BUILD_INFO.txt
           retention-days: 7
