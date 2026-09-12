@@ -2,7 +2,7 @@ name: Build Preview APK
 
 on:
   push:
-    branches: [ v8-refined-v3 ]
+    branches: [ v9-ebroker-inspired ]
   workflow_dispatch:
 
 jobs:
@@ -30,6 +30,7 @@ jobs:
           python3 tools/patch_v8.py buildapp/lib/main.dart
           python3 tools/patch_v8_fix.py buildapp/lib/main.dart
           python3 tools/patch_v8_cleanup.py buildapp/lib/main.dart
+          python3 tools/patch_v9.py buildapp/lib/main.dart
           python3 - <<'PY'
           from pathlib import Path
           manifest = Path('buildapp/android/app/src/main/AndroidManifest.xml')
@@ -49,15 +50,15 @@ jobs:
         run: flutter build apk --release
       - name: Prepare artifact
         run: |
-          cp buildapp/build/app/outputs/flutter-apk/app-release.apk real-estate-regular-user-preview-v8.apk
-          sha256sum real-estate-regular-user-preview-v8.apk > SHA256.txt
-          printf 'Standalone regular-user UI prototype v8.\nRefined from the V3 visual direction the user preferred, with fuller project-faithful search, filter, map, location and area-drawing flows.\nSource product repository was not modified.\n' > BUILD_INFO.txt
+          cp buildapp/build/app/outputs/flutter-apk/app-release.apk real-estate-regular-user-preview-v9.apk
+          sha256sum real-estate-regular-user-preview-v9.apk > SHA256.txt
+          printf 'Standalone regular-user UI prototype v9.\nVisual direction rebuilt from scratch to resemble eBroker by WRTeam, while preserving the product content model and avoiding paid template source/assets.\nSource product repository was not modified.\n' > BUILD_INFO.txt
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: regular-user-preview-v8-apk
+          name: regular-user-preview-v9-apk
           path: |
-            real-estate-regular-user-preview-v8.apk
+            real-estate-regular-user-preview-v9.apk
             SHA256.txt
             BUILD_INFO.txt
           retention-days: 7
