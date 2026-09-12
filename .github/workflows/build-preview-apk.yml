@@ -32,12 +32,6 @@ jobs:
           rm -rf buildapp/test
           python3 - <<'PY'
           from pathlib import Path
-          main = Path('buildapp/lib/main.dart')
-          s = main.read_text()
-          s = s.replace('const RangeSlider(values:RangeValues(25,90)', 'RangeSlider(values:const RangeValues(25,90)')
-          s = s.replace(']) )]));}', ']) ))]));}')
-          main.write_text(s)
-
           manifest = Path('buildapp/android/app/src/main/AndroidManifest.xml')
           m = manifest.read_text()
           if 'android.permission.INTERNET' not in m:
@@ -59,16 +53,16 @@ jobs:
 
       - name: Prepare artifact
         run: |
-          cp buildapp/build/app/outputs/flutter-apk/app-release.apk real-estate-regular-user-preview-v2.apk
-          sha256sum real-estate-regular-user-preview-v2.apk > SHA256.txt
-          printf 'Standalone UI prototype v2 only.\nSource product repository was read-only and not modified.\n' > BUILD_INFO.txt
+          cp buildapp/build/app/outputs/flutter-apk/app-release.apk real-estate-regular-user-preview-v3.apk
+          sha256sum real-estate-regular-user-preview-v3.apk > SHA256.txt
+          printf 'Standalone UI prototype v3 only.\nCompletely redesigned visual identity.\nSource product repository was read-only and not modified.\n' > BUILD_INFO.txt
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: regular-user-preview-v2-apk
+          name: regular-user-preview-v3-apk
           path: |
-            real-estate-regular-user-preview-v2.apk
+            real-estate-regular-user-preview-v3.apk
             SHA256.txt
             BUILD_INFO.txt
           retention-days: 7
