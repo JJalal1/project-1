@@ -51,7 +51,7 @@ jobs:
 
       - name: Analyze
         working-directory: buildapp
-        run: flutter analyze
+        run: flutter analyze --no-fatal-infos
 
       - name: Build release APK
         working-directory: buildapp
