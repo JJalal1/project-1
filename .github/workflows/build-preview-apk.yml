@@ -33,6 +33,7 @@ jobs:
           python3 tools/patch_v9.py buildapp/lib/main.dart
           python3 tools/patch_v9_fix.py buildapp/lib/main.dart
           python3 tools/patch_v10.py buildapp/lib/main.dart
+          python3 tools/patch_v10_fix.py buildapp/lib/main.dart
           python3 - <<'PY'
           from pathlib import Path
           manifest = Path('buildapp/android/app/src/main/AndroidManifest.xml')
