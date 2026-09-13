@@ -42,6 +42,15 @@ jobs:
       - name: Dependencies
         working-directory: buildapp
         run: flutter pub get
+      - name: Analyze report
+        working-directory: buildapp
+        run: flutter analyze --no-fatal-infos > ../ANALYZE_V9.txt 2>&1 || true
+      - name: Upload analyze report
+        uses: actions/upload-artifact@v4
+        with:
+          name: v9-analyze-report
+          path: ANALYZE_V9.txt
+          retention-days: 1
       - name: Analyze
         working-directory: buildapp
         run: flutter analyze --no-fatal-infos
@@ -52,7 +61,7 @@ jobs:
         run: |
           cp buildapp/build/app/outputs/flutter-apk/app-release.apk real-estate-regular-user-preview-v9.apk
           sha256sum real-estate-regular-user-preview-v9.apk > SHA256.txt
-          printf 'Standalone regular-user UI prototype v9.\nVisual direction rebuilt from scratch to resemble eBroker by WRTeam, while preserving the product content model and avoiding paid template source/assets.\nSource product repository was not modified.\n' > BUILD_INFO.txt
+          printf 'Standalone regular-user UI prototype v9.\neBroker-inspired visual direction rebuilt from scratch around the project current product content and flows.\nNo paid eBroker source or assets copied. Source product repository was not modified.\n' > BUILD_INFO.txt
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
