@@ -32,6 +32,7 @@ jobs:
           python3 tools/patch_v8_cleanup.py buildapp/lib/main.dart
           python3 tools/patch_v9.py buildapp/lib/main.dart
           python3 tools/patch_v9_fix.py buildapp/lib/main.dart
+          python3 tools/patch_v10.py buildapp/lib/main.dart
           python3 - <<'PY'
           from pathlib import Path
           manifest = Path('buildapp/android/app/src/main/AndroidManifest.xml')
@@ -51,15 +52,15 @@ jobs:
         run: flutter build apk --release
       - name: Prepare artifact
         run: |
-          cp buildapp/build/app/outputs/flutter-apk/app-release.apk real-estate-regular-user-preview-v9.apk
-          sha256sum real-estate-regular-user-preview-v9.apk > SHA256.txt
-          printf 'Standalone regular-user UI prototype v9.\neBroker-inspired visual language using original implementation and our own content/assets; product flows remain project-faithful.\nSource product repository was not modified.\n' > BUILD_INFO.txt
+          cp buildapp/build/app/outputs/flutter-apk/app-release.apk real-estate-regular-user-preview-v10.apk
+          sha256sum real-estate-regular-user-preview-v10.apk > SHA256.txt
+          printf 'Standalone regular-user UI prototype v10.\neBroker-inspired menu rows, icon buttons and bottom navigation using original implementation and project-faithful content.\nSource product repository was not modified.\n' > BUILD_INFO.txt
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: regular-user-preview-v9-apk
+          name: regular-user-preview-v10-apk
           path: |
-            real-estate-regular-user-preview-v9.apk
+            real-estate-regular-user-preview-v10.apk
             SHA256.txt
             BUILD_INFO.txt
           retention-days: 7
